@@ -3,7 +3,7 @@ import type { Ref } from "vue";
 // общее
 import { ref, watch } from "vue";
 // функции
-import { useRandomInteger } from "./useRandomInteger";
+import { useIntegerRange } from "./useIntegerRange";
 
 /* ---------------------------------- Константы ---------------------------------- */
 
@@ -76,10 +76,7 @@ export function useSimonSaysGame({
   const roundCounter: Ref<number> = ref(0);
   const numberSequence: Ref<number[]> = ref([]);
 
-  const { generate: generateInteger } = useRandomInteger(
-    numberRange.min,
-    numberRange.max
-  );
+  const { random: getRandomNumber } = useIntegerRange(numberRange);
   let checker: Generator<boolean, boolean, number> | null = null;
 
   /**
@@ -151,7 +148,7 @@ export function useSimonSaysGame({
    */
   function setNextRound(): void {
     roundCounter.value++;
-    numberSequence.value.push(generateInteger());
+    numberSequence.value.push(getRandomNumber());
   }
 
   /**
