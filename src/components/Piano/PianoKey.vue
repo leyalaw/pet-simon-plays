@@ -1,13 +1,13 @@
 <template>
   <!-- ФОРТЕПИАННАЯ КЛАВИША -->
   <!-- Важные для структуры стили описаны инлайн -->
-  <div
+  <button
     :data-piano-key="info.color"
-    :style="{ pointerEvents: isKeyDisabled ? 'none' : 'auto' }"
     :class="{ active: isKeyPressed }"
     :disabled="isKeyDisabled"
-    @mousedown="onMouseDown"
-  ></div>
+    @mousedown="onKeyPress"
+    @touchstart.prevent="onKeyPress"
+  ></button>
 </template>
 
 <script lang="ts">
@@ -114,17 +114,23 @@ const onAudioLoadEnd = (
 /**
  * Инициация воспроизведения звука при клике на клавишу юзером
  */
-const onMouseDown = (): void => {
+const onKeyPress = (): void => {
+  if (isKeyDisabled.value) return;
   playSound({ status: "start", initiator: "user" });
-  document.addEventListener("mouseup", onMouseUp);
+  ["mouseup", "touchend"].forEach((event) =>
+    document.addEventListener(event, onKeyRelease)
+  );
 };
 
 /**
  * Инициация остановки звука при отпускании клавиши юзером
  */
-const onMouseUp = (): void => {
+const onKeyRelease = (): void => {
+  if (isKeyDisabled.value) return;
   playSound({ status: "end", initiator: "user" });
-  document.removeEventListener("mouseup", onMouseUp);
+  ["mouseup", "touchend"].forEach((event) =>
+    document.removeEventListener(event, onKeyRelease)
+  );
 };
 
 /* -------------------------------- Основное -------------------------------- */
@@ -145,6 +151,7 @@ const emit = defineEmits(["ready", "sound"]);
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
   transition: box-shadow, background-color, 0.2s;
+  pointer-events: auto;
 }
 
 [data-piano-key]:not(:disabled) {
