@@ -42,13 +42,13 @@ export type Handlers = {
   /** Функция, вызываемая при объявлении каждого числа */
   onSayingNumber: (n: number) => void;
   /** Функция, вызываемая при изменении раунда */
-  onRoundChange?: (round: number) => void;
+  onRoundChange?: (newRound: number, oldRound: number) => void;
   /** Функция, вызываемая при изменении статуса */
-  onStatusChange?: (status: STATUS) => void;
+  onStatusChange?: (newStatus: Status, oldStatus: Status) => void;
 };
 
 /** Статусы игры */
-export type STATUS = (typeof STATUS)[keyof typeof STATUS];
+export type Status = (typeof STATUS)[keyof typeof STATUS];
 
 /** Ответ на предположение */
 export type CheckAnswer = {
@@ -72,7 +72,7 @@ export function useSimonSaysGame({
 }: Settings): Game {
   /* -------------------------------- Основное -------------------------------- */
 
-  const currStatus: Ref<STATUS> = ref(STATUS.INITIAL);
+  const currStatus: Ref<Status> = ref(STATUS.INITIAL);
   const roundCounter: Ref<number> = ref(0);
   const numberSequence: Ref<number[]> = ref([]);
 
@@ -122,7 +122,7 @@ export function useSimonSaysGame({
    * Проверить статус игры
    * @param status - ожидаемый статус
    */
-  function isStatus(status: STATUS): boolean {
+  function isStatus(status: Status): boolean {
     return currStatus.value === status;
   }
 
@@ -130,7 +130,7 @@ export function useSimonSaysGame({
    * Установить новый статус
    * @param status - новый статус
    */
-  function setStatus(status: STATUS): void {
+  function setStatus(status: Status): void {
     currStatus.value = status;
   }
 
